@@ -1,0 +1,1 @@
+rg --no-line-number '"kind": "class"' ctags.json | rg -v 'Test' | jq -r '[.name,.path] | @csv' | tr -d '"' | ./class.rb > byteraft.uml
