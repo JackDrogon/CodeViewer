@@ -53,7 +53,8 @@ class Class(Symbol):
 
     def __str__(self) -> str:
         # FIXME
-        return super().__str__()
+        # return super().__str__()
+        return f"class: {self.name}\nmembers: {self.variables}\nfunctions: {self.functions}"
 
     def add_function(self, tag: dict) -> None:
         self.functions.append(ClassFunction(tag))
@@ -81,7 +82,7 @@ class ClassManger():
     def add_function(self, tag: dict) -> None:
         class_name = tag['scope']
         if class_name in self.classes:
-            self.classes[class_name].functions.append(tag)
+            self.classes[class_name].add_function(tag)
         else:
             print(f"{class_name} not found")
 
@@ -92,7 +93,7 @@ class ClassManger():
     def add_variable(self, tag: dict) -> None:
         class_name = tag['scope']
         if class_name in self.classes:
-            self.classes[class_name].variables.append(tag)
+            self.classes[class_name].add_variable(tag)
         else:
             print(f"{class_name} not found")
 
@@ -101,23 +102,27 @@ class TagManger():
 
     def __init__(self) -> None:
         self.tags = {}
-        self.class_manger = ClassManger()
+        self.class_manager = ClassManger()
         self.function_manger = {}
         self.variable_manger = {}
 
     def __lshift__(self, tag) -> None:
         self.tags[tag['name']] = tag
         # kind is class, add to class manager
-        if "kind" not in tag:
+        kind = tag.get('kind', '')
+
+        if kind == '':
             return
-        if tag['kind'] == 'class':
-            self.class_manger << tag
+        elif kind == 'class':
+            self.class_manager << tag
         # kind is function, add to function manager
-        elif tag['kind'] == 'function':
+        elif kind == 'function':
             self.add_function(tag)
         # kind is variable, add to variable manager
-        elif tag['kind'] == 'variable':
+        elif kind == 'variable':
             self.add_variable(tag)
+        elif kind == 'member':
+            self.add_member(tag)
 
     """
     add function tag
@@ -126,8 +131,8 @@ class TagManger():
     """
 
     def add_function(self, tag: dict) -> None:
-        if 'scopeKind' in tag and tag['scopeKind'] == 'class':
-            self.class_manger << tag
+        if tag.get('scopeKind', '') == 'class':
+            self.class_manager.add_function(tag)
         else:
             self.function_manger[tag['name']] = tag
 
@@ -137,11 +142,14 @@ class TagManger():
     if function scopeKind is class, call class_manager add variable tag
     """
 
-    def add_variable(self, tag: dict) -> Class:
-        if 'scopeKind' in tag and tag['scopeKind'] == 'class':
-            self.class_manger << tag
+    def add_variable(self, tag: dict):
+        if tag.get('scopeKind', '') == 'class':
+            self.class_manager.add_variable(tag)
         else:
             self.variable_manger[tag['name']] = tag
+
+    def add_member(self, tag: dict):
+        self.class_manager.add_variable(tag)
 
 
 # def show_class(filename: str):
@@ -151,6 +159,13 @@ class TagManger():
 #         # print(data['class'])
 #         if "kind" in entry and entry['kind'] == 'class':
 #             print(entry['name'])
+
+
+# TODO
+class ProgrammgingLanguageManager():
+
+    def __init__(self, name: str) -> None:
+        self.name = name
 
 
 class TagParser():
@@ -163,13 +178,14 @@ class TagParser():
         file = open(filename, 'r')
         for line in file:
             tag = json.loads(line)
-            self.tag_manager << tag
+            if tag.get('language', '') == 'C++':
+                self.tag_manager << tag
 
 
 def main():
     tag_manager = TagManger()
     tag_parser = TagParser(tag_manager, sys.argv[1])
-    print(tag_parser.tag_manager.class_manger.classes)
+    print(tag_parser.tag_manager.class_manager.classes)
 
 
 if __name__ == "__main__":
