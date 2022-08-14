@@ -33,15 +33,60 @@ class Symbol():
 
 # maybe to all function
 class ClassFunction(Symbol):
-
+    # {"_type": "tag", "name": "leveldb_filterpolicy_create_bloom::Wrapper::CreateFilter", "path": "db/c.cc", "pattern": "/^    void CreateFilter(const Slice* keys, int n, std::string* dst) const {$/", "file": true, "language": "C++", "typeref": "typename:void", "kind": "function", "access": "public", "signature": "(const Slice * keys,int n,std::string * dst) const", "scope": "leveldb_filterpolicy_create_bloom::Wrapper", "scopeKind": "struct"}
     def __init__(self, tag) -> None:
         super().__init__(tag)
+        scope = tag.get("scope", None)
+        # if name startwiths scope, remove scope prefix
+        if scope and self.name.startswith(scope):
+            self.name = self.name[len(scope) + 2:]  # +2 is "::"
+
+        # typeref remove typename:
+        self.typeref = tag.get("typeref", "")
+        if self.typeref.startswith("typename:"):
+            self.typeref = self.typeref[len("typename:"):]
+
+        # access uml tag
+        access = tag.get("access", "")
+        if access == 'private':
+            self.access = '-'
+        elif access == 'protected':
+            self.access = '#'
+        else:
+            self.access = '+'
+
+        self.signature = tag.get("signature", "")
+
+    def __str__(self) -> str:
+        return f"{self.access} {self.typeref} {self.name}{self.signature}"
 
 
 class Variable(Symbol):
 
-    def __init__(self, tag) -> None:
+    # {"_type": "tag", "name": "leveldb::VersionEdit::deleted_files_", "path": "db/version_edit.h", "pattern": "/^  DeletedFileSet deleted_files_;$/", "language": "C++", "typeref": "typename:DeletedFileSet", "kind": "member", "access": "private", "scope": "leveldb::VersionEdit", "scopeKind": "class"}
+    def __init__(self, tag: dict) -> None:
         super().__init__(tag)
+        scope = tag.get("scope", None)
+        # if name startwiths scope, remove scope prefix
+        if scope and self.name.startswith(scope):
+            self.name = self.name[len(scope) + 2:]  # +2 is "::"
+
+        # typeref remove typename:
+        self.typeref = tag.get("typeref", "")
+        if self.typeref.startswith("typename:"):
+            self.typeref = self.typeref[len("typename:"):]
+
+        # access uml tag
+        access = tag.get("access", "")
+        if access == 'private':
+            self.access = '-'
+        elif access == 'protected':
+            self.access = '#'
+        else:
+            self.access = '+'
+
+    def __str__(self) -> str:
+        return f"{self.access} {self.typeref} {self.name}"
 
 
 def remove_anon(name: str) -> str:
@@ -249,7 +294,11 @@ class TagParser():
         # second pass, handle class not found in first pass
         # print("send second pass")
         for tag in second_pass_tags:
-            tag_manager << tag
+            # tag_manager << tag
+            try:
+                tag_manager << tag
+            except NotFoundClassError:
+                pass
 
 
 def main():
@@ -259,6 +308,8 @@ def main():
     # print(tag_manager.class_manager.classes)
     for klass in tag_manager.class_manager.classes.values():
         print(klass.name, klass.scope)
+        print(klass)
+        print("----------")
 
 
 if __name__ == "__main__":
