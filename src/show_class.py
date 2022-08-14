@@ -126,16 +126,28 @@ class ClassManger():
 
         raise NotFoundClassError(class_name)
 
+    def __add_variable(self, class_name: str, tag: dict) -> bool:
+        if class_name in self.classes:
+            self.classes[class_name].add_variable(tag)
+            return True
+        return False
+
     """
     function: add variable tag, delegate to class
     """
 
     def add_variable(self, tag: dict) -> None:
         class_name = tag['scope']
-        if class_name in self.classes:
-            self.classes[class_name].add_variable(tag)
-        else:
-            raise NotFoundClassError(class_name)
+        if self.__add_variable(class_name, tag):
+            return
+
+        # FIXME: need to check scope is anon class
+        # check tag is in cpp impl file not header
+        class_name = remove_anon(class_name)
+        if self.__add_variable(class_name, tag):
+            return
+
+        raise NotFoundClassError(class_name)
 
 
 class TagManger():
