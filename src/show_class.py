@@ -3,6 +3,7 @@
 import sys
 import json
 import re
+from io import StringIO
 
 # {"_type"=>"tag",
 #  "name"=>"AcceptAndReply",
@@ -163,6 +164,19 @@ class Class(Symbol):
 
     def add_variable(self, tag: dict) -> None:
         self.variables.append(Variable(tag))
+
+    # to plantuml
+    def to_plantuml(self) -> str:
+        buffer = StringIO()
+        buffer.write(f"class {self.name} {{\n")
+        for f in self.functions:
+            buffer.write(f"{f.access} {f.typeref} {f.name} {f.signature};\n")
+        if len(self.functions) != 0:
+            buffer.write('\n')
+        for v in self.variables:
+            buffer.write(f"{v.access} {v.typeref} {v.name};\n")
+        buffer.write('}\n')
+        return buffer.getvalue()
 
 
 class Namespace():
@@ -357,8 +371,11 @@ def main():
     tag_parser.add_tags(tag_manager)
     # print(tag_manager.class_manager.classes)
     for klass in tag_manager.class_manager.classes.values():
-        print(klass.name, klass.scope)
-        print(klass)
+        # print(klass.name, klass.scope)
+        # print(klass)
+        # print("----------")
+
+        print(klass.to_plantuml())
         print("----------")
 
 
