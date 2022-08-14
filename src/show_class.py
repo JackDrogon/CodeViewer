@@ -54,10 +54,13 @@ def remove_anon(name: str) -> str:
 
 
 class Class(Symbol):
+    """
+    scope = "", class is in global namespace
+    """
 
     def __init__(self, tag) -> None:
         super().__init__(tag)
-        self.scope = tag['scope']
+        self.scope = tag.get('scope', "")
         self.variables = []
         self.functions = []
         self.is_anon = False
@@ -150,7 +153,7 @@ class TagManger():
 
         if kind == '':
             return
-        elif kind == 'class' or kind == 'strcut':
+        elif kind == 'class' or kind == 'struct':
             self.class_manager << tag
         # kind is function, add to function manager
         elif kind == 'function':
@@ -231,8 +234,8 @@ class TagParser():
             except NotFoundClassError:
                 second_pass_tags.append(tag)
 
-        # second pass
-        print("send second pass")
+        # second pass, handle class not found in first pass
+        # print("send second pass")
         for tag in second_pass_tags:
             tag_manager << tag
 
