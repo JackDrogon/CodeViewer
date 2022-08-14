@@ -176,34 +176,36 @@ class NotFoundClassError(Exception):
 
 class TagParser():
 
-    def __init__(self, tag_manager: TagManger, filename: str):
-        self.tag_manager = tag_manager
-        self.__add_tags(filename)
+    def __init__(self, tags_filename: str):
+        self.tags_filename = tags_filename
 
-    def __add_tags(self, filename: str):
+    def add_tags(self, tag_manager: TagManger) -> None:
         # first pass
         second_pass_tags = []
-        file = open(filename, 'r')
+        file = open(self.tags_filename, 'r')
         for line in file:
             tag = json.loads(line)
             if tag.get('language', '') != 'C++':
                 continue
             try:
-                self.tag_manager << tag
+                tag_manager << tag
             except Exception as e:
                 print(e)
                 second_pass_tags.append(tag)
 
-        # second pass
+        second pass
         print("send second pass")
         for tag in second_pass_tags:
-            self.tag_manager << tag
+            tag_manager << tag
 
 
 def main():
+    tag_parser = TagParser(sys.argv[1])
     tag_manager = TagManger()
-    tag_parser = TagParser(tag_manager, sys.argv[1])
-    print(tag_parser.tag_manager.class_manager.classes)
+    tag_parser.add_tags(tag_manager)
+    # print(tag_manager.class_manager.classes)
+    for klass in tag_manager.class_manager.classes:
+        print(klass)
 
 
 if __name__ == "__main__":
