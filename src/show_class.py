@@ -48,8 +48,15 @@ class Class(Symbol):
 
     def __init__(self, tag) -> None:
         super().__init__(tag)
+        self.scope = tag['scope']
         self.variables = []
         self.functions = []
+
+        # fix class name:
+        # if name not start with scope name, add scope name to the front
+        # like DataFile leveldb::SpecialEnv::NewWritableFile to leveldb::SpecialEnv::NewWritableFile::Data
+        if not self.name.startswith(self.scope):
+            self.name = self.scope + "::" + self.name
 
     def __str__(self) -> str:
         # FIXME
@@ -73,7 +80,8 @@ class ClassManger():
         self.classes = {}
 
     def __lshift__(self, tag: dict) -> Class:
-        self.classes[tag['name']] = Class(tag)
+        klass = Class(tag)
+        self.classes[klass.name] = klass
 
     """
     function: add function tag, delegate to class
@@ -189,11 +197,10 @@ class TagParser():
                 continue
             try:
                 tag_manager << tag
-            except Exception as e:
-                print(e)
+            except NotFoundClassError:
                 second_pass_tags.append(tag)
 
-        second pass
+        # second pass
         print("send second pass")
         for tag in second_pass_tags:
             tag_manager << tag
@@ -204,8 +211,8 @@ def main():
     tag_manager = TagManger()
     tag_parser.add_tags(tag_manager)
     # print(tag_manager.class_manager.classes)
-    for klass in tag_manager.class_manager.classes:
-        print(klass)
+    for klass in tag_manager.class_manager.classes.values():
+        print(klass.name, klass.scope)
 
 
 if __name__ == "__main__":
