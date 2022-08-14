@@ -84,7 +84,7 @@ class ClassManger():
         if class_name in self.classes:
             self.classes[class_name].add_function(tag)
         else:
-            print(f"{class_name} not found")
+            raise NotFoundClassError(class_name)
 
     """
     function: add variable tag, delegate to class
@@ -95,7 +95,7 @@ class ClassManger():
         if class_name in self.classes:
             self.classes[class_name].add_variable(tag)
         else:
-            print(f"{class_name} not found")
+            raise NotFoundClassError(class_name)
 
 
 class TagManger():
@@ -168,6 +168,12 @@ class ProgrammgingLanguageManager():
         self.name = name
 
 
+class NotFoundClassError(Exception):
+
+    def __init__(self, message: str) -> None:
+        self.message = message
+
+
 class TagParser():
 
     def __init__(self, tag_manager: TagManger, filename: str):
@@ -175,11 +181,23 @@ class TagParser():
         self.__add_tags(filename)
 
     def __add_tags(self, filename: str):
+        # first pass
+        second_pass_tags = []
         file = open(filename, 'r')
         for line in file:
             tag = json.loads(line)
-            if tag.get('language', '') == 'C++':
+            if tag.get('language', '') != 'C++':
+                continue
+            try:
                 self.tag_manager << tag
+            except Exception as e:
+                print(e)
+                second_pass_tags.append(tag)
+
+        # second pass
+        print("send second pass")
+        for tag in second_pass_tags:
+            self.tag_manager << tag
 
 
 def main():
