@@ -114,17 +114,17 @@ class ClassManger():
     """
 
     def add_function(self, tag: dict) -> None:
-        class_name = tag['scope']
-        if self.__add_function(class_name, tag):
+        raw_class_name = tag['scope']
+        if self.__add_function(raw_class_name, tag):
             return
 
         # FIXME: need to check scope is anon class
         # check tag is in cpp impl file not header
-        class_name = remove_anon(class_name)
+        class_name = remove_anon(raw_class_name)
         if self.__add_function(class_name, tag):
             return
 
-        raise NotFoundClassError(class_name)
+        raise NotFoundClassError(raw_class_name)
 
     def __add_variable(self, class_name: str, tag: dict) -> bool:
         if class_name in self.classes:
@@ -137,17 +137,17 @@ class ClassManger():
     """
 
     def add_variable(self, tag: dict) -> None:
-        class_name = tag['scope']
-        if self.__add_variable(class_name, tag):
+        raw_class_name = tag['scope']
+        if self.__add_variable(raw_class_name, tag):
             return
 
         # FIXME: need to check scope is anon class
         # check tag is in cpp impl file not header
-        class_name = remove_anon(class_name)
+        class_name = remove_anon(raw_class_name)
         if self.__add_variable(class_name, tag):
             return
 
-        raise NotFoundClassError(class_name)
+        raise NotFoundClassError(raw_class_name)
 
 
 class TagManger():
