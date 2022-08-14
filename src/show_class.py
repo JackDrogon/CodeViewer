@@ -2,6 +2,7 @@
 
 import sys
 import json
+import re
 
 # {"_type"=>"tag",
 #  "name"=>"AcceptAndReply",
@@ -228,6 +229,12 @@ class ClassManger():
         if self.__add_variable(class_name, tag):
             return
 
+        # FIXME: map<string, map<int, int>>
+        class_name = re.sub(r"<.*>", "", class_name)
+        if self.__add_variable(class_name, tag):
+            return
+
+        # raise NotFoundClassError(class_name)
         raise NotFoundClassError(raw_class_name)
 
 
@@ -337,11 +344,11 @@ class TagParser():
         # second pass, handle class not found in first pass
         # print("send second pass")
         for tag in second_pass_tags:
-            # tag_manager << tag
-            try:
-                tag_manager << tag
-            except NotFoundClassError:
-                pass
+            tag_manager << tag
+            # try:
+            #     tag_manager << tag
+            # except NotFoundClassError:
+            #     pass
 
 
 def main():
