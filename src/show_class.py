@@ -105,11 +105,39 @@ class Class(Symbol):
 
     def __init__(self, tag) -> None:
         super().__init__(tag)
-        self.scope = tag.get('scope', "")
         self.variables = []
         self.functions = []
-        self.is_anon = False
-        self.__maybe_fix_name()
+        self.inherits = set()
+        self.scope = tag.get('scope', "")
+        self.is_anon = None
+
+        self.merge(tag)
+
+    """
+    function add inherit class
+    tag: {"_type": "tag", "name": "T3", "path": "t1.h", "pattern": "/^class T3 : public T1, T2, map<string, int> {};$/", "language": "C++", "kind": "class", "inherits": "T1,T2,map<string,int>"}
+    split by ','
+    """
+
+    def __add_inherits(self, tag: dict) -> None:
+        inherit = tag.get("inherits", None)
+        if inherit is None:
+            return
+
+        inherits = inherit.split(",")
+        self.inherits.update(inherits)
+        # for inherit in inherits:
+        #     # remove cpp template <type>
+        #     # self.inherit[i] = remove_anon(self.inherit[i])
+        #     self.inherits.append(inherit)
+
+    # split __init__ in merge by multipass, because some classes inherit from other class && with other
+    # generated tag
+    def merge(self, tag) -> None:
+        if self.is_anon is None:
+            self.__maybe_fix_name()
+
+        self.__add_inherits(tag)
 
     """fix the name of class"""
 
@@ -123,10 +151,11 @@ class Class(Symbol):
         if name != self.name:
             self.is_anon = True
             self.name = name
+        else:
+            self.is_anon = False
 
     def __str__(self) -> str:
-        # FIXME
-        return f"class: {self.name}\nmembers: {self.variables}\nfunctions: {self.functions}"
+        return f"class: {self.name}\ninherits: {self.inherits}\nmembers: {self.variables}\nfunctions: {self.functions}"
 
     def add_function(self, tag: dict) -> None:
         self.functions.append(ClassFunction(tag))
@@ -144,9 +173,16 @@ class ClassManger():
     def __init__(self) -> None:
         self.classes = {}
 
-    def __lshift__(self, tag: dict) -> Class:
+    """
+    function: add class
+    """
+
+    def add_class(self, tag: dict) -> None:
         klass = Class(tag)
-        self.classes[klass.name] = klass
+        if klass.name in self.classes:
+            self.classes[klass.name].merge(tag)
+        else:
+            self.classes[klass.name] = klass
 
     def __add_function(self, class_name: str, tag: dict) -> bool:
         if class_name in self.classes:
@@ -211,7 +247,7 @@ class TagManger():
         if kind == '':
             return
         elif kind == 'class' or kind == 'struct':
-            self.class_manager << tag
+            self.add_class(tag)
         # kind is function, add to function manager
         elif kind == 'function':
             self.add_function(tag)
@@ -220,6 +256,13 @@ class TagManger():
             self.add_variable(tag)
         elif kind == 'member':
             self.add_member(tag)
+
+    """
+    function: add class tag to class manager
+    """
+
+    def add_class(self, tag: dict) -> None:
+        self.class_manager.add_class(tag)
 
     """
     add function tag
