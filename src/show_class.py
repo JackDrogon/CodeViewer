@@ -44,6 +44,15 @@ class Variable(Symbol):
         super().__init__(tag)
 
 
+def remove_anon(name: str) -> str:
+    # if scope split by ::, any one contains str startwiths "__anon", remove it
+    # like leveldb::__anon2cdfda410111::PosixEnv => leveldb::PosixEnv
+    for field in name.split("::"):
+        if field.startswith("__anon"):
+            name = name.replace(f"{field}::", "")
+    return name
+
+
 class Class(Symbol):
 
     def __init__(self, tag) -> None:
@@ -51,16 +60,24 @@ class Class(Symbol):
         self.scope = tag['scope']
         self.variables = []
         self.functions = []
+        self.is_anon = False
+        self.__maybe_fix_name()
 
-        # fix class name:
+    """fix the name of class"""
+
+    def __maybe_fix_name(self):
         # if name not start with scope name, add scope name to the front
-        # like DataFile leveldb::SpecialEnv::NewWritableFile to leveldb::SpecialEnv::NewWritableFile::Data
+        # like DataFile leveldb::SpecialEnv::NewWritableFile => leveldb::SpecialEnv::NewWritableFile::Data
         if not self.name.startswith(self.scope):
             self.name = self.scope + "::" + self.name
 
+        name = remove_anon(self.name)
+        if name != self.name:
+            self.is_anon = True
+            self.name = name
+
     def __str__(self) -> str:
         # FIXME
-        # return super().__str__()
         return f"class: {self.name}\nmembers: {self.variables}\nfunctions: {self.functions}"
 
     def add_function(self, tag: dict) -> None:
@@ -83,16 +100,28 @@ class ClassManger():
         klass = Class(tag)
         self.classes[klass.name] = klass
 
+    def __add_function(self, class_name: str, tag: dict) -> bool:
+        if class_name in self.classes:
+            self.classes[class_name].add_function(tag)
+            return True
+        return False
+
     """
     function: add function tag, delegate to class
     """
 
     def add_function(self, tag: dict) -> None:
         class_name = tag['scope']
-        if class_name in self.classes:
-            self.classes[class_name].add_function(tag)
-        else:
-            raise NotFoundClassError(class_name)
+        if self.__add_function(class_name, tag):
+            return
+
+        # FIXME: need to check scope is anon class
+        # check tag is in cpp impl file not header
+        class_name = remove_anon(class_name)
+        if self.__add_function(class_name, tag):
+            return
+
+        raise NotFoundClassError(class_name)
 
     """
     function: add variable tag, delegate to class
@@ -121,7 +150,7 @@ class TagManger():
 
         if kind == '':
             return
-        elif kind == 'class':
+        elif kind == 'class' or kind == 'strcut':
             self.class_manager << tag
         # kind is function, add to function manager
         elif kind == 'function':
@@ -139,7 +168,8 @@ class TagManger():
     """
 
     def add_function(self, tag: dict) -> None:
-        if tag.get('scopeKind', '') == 'class':
+        scope_kind = tag.get('scopeKind', '')
+        if scope_kind == 'class' or scope_kind == 'struct':
             self.class_manager.add_function(tag)
         else:
             self.function_manger[tag['name']] = tag
@@ -151,7 +181,8 @@ class TagManger():
     """
 
     def add_variable(self, tag: dict):
-        if tag.get('scopeKind', '') == 'class':
+        scope_kind = tag.get('scopeKind', '')
+        if scope_kind == 'class' or scope_kind == 'struct':
             self.class_manager.add_variable(tag)
         else:
             self.variable_manger[tag['name']] = tag
