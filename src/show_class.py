@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# from typing import Self https://peps.python.org/pep-0673/
+from __future__ import annotations
+
 import abc
 import sys
 import json
@@ -11,10 +14,27 @@ abstract class with method to_plantuml(), return str
 """
 
 
+class Buffer:
+
+    def __init__(self):
+        self.buffer = StringIO()
+
+    """
+    function <<(value), write to buffer
+    """
+
+    def __lshift__(self, value: str) -> Buffer:
+        self.buffer.write(value)
+        return self
+
+    def __str__(self) -> str:
+        return self.buffer.getvalue()
+
+
 class PlantUMLer(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def to_plantuml(self) -> str:
+    def to_plantuml(self, buffer: Buffer) -> None:
         pass
 
 
@@ -45,8 +65,8 @@ class Symbol(PlantUMLer):
     def __repr__(self) -> str:
         return self.__str__()
 
-    def to_plantuml(self) -> str:
-        return self.__str__()
+    def to_plantuml(self, buffer: Buffer) -> None:
+        buffer << self.__str__() << ";"
 
 
 # maybe to all function
@@ -182,19 +202,22 @@ class Class(Symbol):
         self.variables.append(Variable(tag))
 
     # to plantuml
-    def to_plantuml(self) -> str:
-        buffer = StringIO()
-        buffer.write(f"class {self.name} {{\n")
+    def to_plantuml(self, buffer: Buffer) -> None:
+        buffer << f"class {self.name} {{\n"
+
+        # append functions
         for f in self.functions:
-            buffer.write(f.to_plantuml())
-            buffer.write(";\n")
+            f.to_plantuml(buffer)
+            buffer << '\n'
         if len(self.functions) != 0:
-            buffer.write('\n')
+            buffer << '\n'
+
+        # append variables
         for v in self.variables:
-            buffer.write(v.to_plantuml())
-            buffer.write(";\n")
-        buffer.write('}\n')
-        return buffer.getvalue()
+            v.to_plantuml(buffer)
+            buffer << '\n'
+
+        buffer << '}'
 
 
 class Namespace():
@@ -393,7 +416,9 @@ def main():
         # print(klass)
         # print("----------")
 
-        print(klass.to_plantuml())
+        buffer = Buffer()
+        klass.to_plantuml(buffer)
+        print(buffer)
         print("----------")
 
 
