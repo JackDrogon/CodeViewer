@@ -1,9 +1,22 @@
 #!/usr/bin/env python3
 
+import abc
 import sys
 import json
 import re
 from io import StringIO
+"""
+PlantUMLer
+abstract class with method to_plantuml(), return str
+"""
+
+
+class PlantUMLer(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def to_plantuml(self) -> str:
+        pass
+
 
 # {"_type"=>"tag",
 #  "name"=>"AcceptAndReply",
@@ -17,7 +30,7 @@ from io import StringIO
 #  "scopeKind"=>"class"}
 
 
-class Symbol():
+class Symbol(PlantUMLer):
 
     def __init__(self, tag) -> None:
         self.name = tag['name']
@@ -30,6 +43,9 @@ class Symbol():
         return f"{self.name} {self.filename}:{self.line}"
 
     def __repr__(self) -> str:
+        return self.__str__()
+
+    def to_plantuml(self) -> str:
         return self.__str__()
 
 
@@ -170,11 +186,13 @@ class Class(Symbol):
         buffer = StringIO()
         buffer.write(f"class {self.name} {{\n")
         for f in self.functions:
-            buffer.write(f"{f.access} {f.typeref} {f.name} {f.signature};\n")
+            buffer.write(f.to_plantuml())
+            buffer.write(";\n")
         if len(self.functions) != 0:
             buffer.write('\n')
         for v in self.variables:
-            buffer.write(f"{v.access} {v.typeref} {v.name};\n")
+            buffer.write(v.to_plantuml())
+            buffer.write(";\n")
         buffer.write('}\n')
         return buffer.getvalue()
 
