@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-
 # from typing import Self https://peps.python.org/pep-0673/
 from __future__ import annotations
 
 import abc
-import sys
 import json
 import re
 from io import StringIO
@@ -454,26 +451,3 @@ class TagParser():
             #     tag_manager << tag
             # except NotFoundClassError:
             #     pass
-
-
-def main():
-    tag_parser = TagParser(sys.argv[1])
-    tag_manager = TagManger()
-    tag_parser.add_tags(tag_manager)
-    # print(tag_manager.class_manager.classes)
-    for klass in tag_manager.class_manager.classes.values():
-        print(klass.name, klass.scope)
-        print(klass)
-        print("----------")
-
-        # buffer = Buffer()
-        # klass.to_plantuml(buffer)
-        # print(buffer)
-        # print("----------")
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
