@@ -193,7 +193,27 @@ class Class(Symbol):
             self.is_anon = False
 
     def __str__(self) -> str:
-        return f"class: {self.name}\ninherits: {self.inherits}\nmembers: {self.variables}\nfunctions: {self.functions}"
+        buffer = Buffer()
+        buffer << f"class: {self.name}"
+        if len(self.inherits) > 0:
+            buffer << "\n"
+            buffer << f"inherits: [\n"
+            for inherit in self.inherits:
+                buffer << f"\t{inherit}\n"
+            buffer << f"]"
+        if len(self.variables) > 0:
+            buffer << "\n"
+            buffer << f"members: [\n"
+            for variable in self.variables:
+                buffer << f"\t{variable}\n"
+            buffer << f"]"
+        if len(self.functions) > 0:
+            buffer << "\n"
+            buffer << f"functions: [\n"
+            for function in self.functions:
+                buffer << f"\t{function}\n"
+            buffer << f"]"
+        return str(buffer)
 
     def add_function(self, tag: dict) -> None:
         self.functions.append(ClassFunction(tag))
@@ -412,14 +432,14 @@ def main():
     tag_parser.add_tags(tag_manager)
     # print(tag_manager.class_manager.classes)
     for klass in tag_manager.class_manager.classes.values():
-        # print(klass.name, klass.scope)
-        # print(klass)
-        # print("----------")
-
-        buffer = Buffer()
-        klass.to_plantuml(buffer)
-        print(buffer)
+        print(klass.name, klass.scope)
+        print(klass)
         print("----------")
+
+        # buffer = Buffer()
+        # klass.to_plantuml(buffer)
+        # print(buffer)
+        # print("----------")
 
 
 if __name__ == "__main__":
