@@ -1,3 +1,4 @@
 /src/ctags.json filter=lfs diff=lfs merge=lfs -text
 /src/leveldb.json filter=lfs diff=lfs merge=lfs -text
 /src/clickhouse.json filter=lfs diff=lfs merge=lfs -text
+/test_data/leveldb.json filter=lfs diff=lfs merge=lfs -text
