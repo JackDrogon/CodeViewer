@@ -315,6 +315,36 @@ class ClassManger():
 
 class TagManger():
 
+    @staticmethod
+    def __is_class(kind: str) -> bool:
+        if kind == 'class':
+            return True
+        if kind == 'struct':
+            return True
+        if kind == 'enum':
+            return True
+        return False
+
+    @staticmethod
+    def __is_function(kind: str) -> bool:
+        if kind == 'function':
+            return True
+        return False
+
+    @staticmethod
+    def __is_variable(kind: str) -> bool:
+        if kind == 'variable':
+            return True
+        return False
+
+    @staticmethod
+    def __is_member(kind: str) -> bool:
+        if kind == 'member':
+            return True
+        if kind == 'enumerator':
+            return True
+        return False
+
     def __init__(self) -> None:
         self.tags = {}
         self.class_manager = ClassManger()
@@ -328,15 +358,15 @@ class TagManger():
 
         if kind == '':
             return
-        elif kind == 'class' or kind == 'struct':
+        elif self.__is_class(kind):
             self.add_class(tag)
         # kind is function, add to function manager
-        elif kind == 'function':
+        elif self.__is_function(kind):
             self.add_function(tag)
         # kind is variable, add to variable manager
-        elif kind == 'variable':
+        elif self.__is_variable(kind):
             self.add_variable(tag)
-        elif kind == 'member':
+        elif self.__is_member(kind):
             self.add_member(tag)
 
     """
