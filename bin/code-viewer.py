@@ -15,17 +15,18 @@ def main():
     tag_parser = code_viewer.TagParser(args.filename)
     tag_manager = code_viewer.TagManger()
     tag_parser.add_tags(tag_manager)
-    # print(tag_manager.class_manager.classes)
-    for klass in tag_manager.class_manager.classes.values():
-        if args.to_uml:
-            buffer = code_viewer.Buffer()
-            klass.to_plantuml(buffer)
-            print(buffer)
-            print("----------")
-        else:
-            print(klass.name, klass.scope)
-            print(klass)
-            print("----------")
+    for namespace in tag_manager.namespaces.values():
+        print("namespace {}".format(namespace.name))
+        for klass in namespace.class_manager.classes.values():
+            if args.to_uml:
+                buffer = code_viewer.Buffer()
+                klass.to_plantuml(buffer)
+                print(buffer)
+                print("----------")
+            else:
+                print(klass.name, klass.scope)
+                print(klass)
+                print("----------")
 
 
 if __name__ == "__main__":

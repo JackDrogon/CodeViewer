@@ -18,15 +18,16 @@ class ClassManger():
         self.classes = {}
 
     """
-    function: add class
+    function: add class, return class name
     """
 
-    def add_class(self, tag: dict) -> None:
+    def add_class(self, tag: dict) -> str:
         klass = Class(tag)
         if klass.name in self.classes:
             self.classes[klass.name].merge(tag)
         else:
             self.classes[klass.name] = klass
+        return klass.name
 
     def __add_function(self, class_name: str, tag: dict) -> bool:
         if class_name in self.classes:
@@ -49,7 +50,7 @@ class ClassManger():
         if self.__add_function(class_name, tag):
             return
 
-        raise NotFoundClassError(raw_class_name)
+        raise NotFoundClassError(f"Not found class: {raw_class_name}")
 
     def __add_variable(self, class_name: str, tag: dict) -> bool:
         if class_name in self.classes:

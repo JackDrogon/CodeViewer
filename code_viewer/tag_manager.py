@@ -1,9 +1,20 @@
 # coding: utf-8
 
+import re
+
+from .utils import remove_anon
 from .class_manager import ClassManger
+from .namespace import Namespace, NotFoundNamespaceError
+
+GLOBAL_NAMESPACE_NAME = '.'
+GLOBAL_NAMESPACE_TAG = {'name': GLOBAL_NAMESPACE_NAME}
 
 
 class TagManger():
+
+    @staticmethod
+    def __is_namespace(kind: str) -> bool:
+        return kind == 'namespace'
 
     @staticmethod
     def __is_class(kind: str) -> bool:
@@ -40,57 +51,81 @@ class TagManger():
         self.class_manager = ClassManger()
         self.function_manger = {}
         self.variable_manger = {}
+        self.namespaces = {
+            GLOBAL_NAMESPACE_NAME: Namespace(GLOBAL_NAMESPACE_TAG)
+        }
+        self.classname_to_namespace = {}
 
     def __lshift__(self, tag) -> None:
         self.tags[tag['name']] = tag
         # kind is class, add to class manager
         kind = tag.get('kind', '')
-
         if kind == '':
             return
-        elif self.__is_class(kind):
-            self.add_class(tag)
+        if self.__is_namespace(kind):
+            self.add_namespace(tag)
+
+        namespace = self.__get_namespace(tag)
+        if self.__is_class(kind):
+            class_name = namespace.add_class(tag)
+            self.classname_to_namespace[class_name] = namespace
+            return
         # kind is function, add to function manager
-        elif self.__is_function(kind):
-            self.add_function(tag)
+        if self.__is_function(kind):
+            namespace.add_function(tag)
+            return
         # kind is variable, add to variable manager
-        elif self.__is_variable(kind):
-            self.add_variable(tag)
-        elif self.__is_member(kind):
-            self.add_member(tag)
+        if self.__is_variable(kind):
+            namespace.add_variable(tag)
+            return
+        if self.__is_member(kind):
+            namespace.add_member(tag)
+            return
 
-    """
-    function: add class tag to class manager
-    """
-
-    def add_class(self, tag: dict) -> None:
-        self.class_manager.add_class(tag)
-
-    """
-    add function tag
-
-    if function scopeKind is class, call class_manager add function tag
+    """"
+    function: add namespace
     """
 
-    def add_function(self, tag: dict) -> None:
-        scope_kind = tag.get('scopeKind', '')
-        if scope_kind == 'class' or scope_kind == 'struct':
-            self.class_manager.add_function(tag)
+    def add_namespace(self, tag: dict) -> None:
+        namespace = Namespace(tag)
+        self.namespaces[namespace.name] = namespace
+        if namespace.name in self.namespaces:
+            self.namespaces[namespace.name].merge(tag)
         else:
-            self.function_manger[tag['name']] = tag
+            self.namespaces[namespace.name] = namespace
 
-    """
-    add variable tag
+    def __get_namespace(self, tag: dict) -> Namespace:
+        scope_kind = tag.get('scopeKind', None)
+        # scope_kind is None
+        if scope_kind is None:
+            return self.namespaces[GLOBAL_NAMESPACE_NAME]
 
-    if function scopeKind is class, call class_manager add variable tag
-    """
+        if self.__is_class(scope_kind):
+            class_name = remove_anon(tag.get('scope', ''))
+            class_name = re.sub(r"<.*>", "", class_name)
+            if class_name == '':
+                return self.namespaces[GLOBAL_NAMESPACE_NAME]
 
-    def add_variable(self, tag: dict):
-        scope_kind = tag.get('scopeKind', '')
-        if scope_kind == 'class' or scope_kind == 'struct':
-            self.class_manager.add_variable(tag)
-        else:
-            self.variable_manger[tag['name']] = tag
+            try:
+                return self.classname_to_namespace[class_name]
+            except KeyError:
+                raise NotFoundNamespaceError(class_name)
 
-    def add_member(self, tag: dict):
-        self.class_manager.add_variable(tag)
+        # HACK: for kind: local....
+        if not self.__is_namespace(scope_kind):
+            return self.namespaces[GLOBAL_NAMESPACE_NAME]
+
+        #  scope_kind is namespace
+        scope = tag.get('scope', None)
+        if scope is None:
+            return self.namespaces[GLOBAL_NAMESPACE_NAME]
+
+        scope = remove_anon(scope)
+        if scope == "":
+            return self.namespaces[GLOBAL_NAMESPACE_NAME]
+
+        namespace = self.namespaces.get(scope, None)
+        if namespace is not None:
+            return namespace
+
+        raise NotFoundNamespaceError(f"Not found namespace: {scope}")
