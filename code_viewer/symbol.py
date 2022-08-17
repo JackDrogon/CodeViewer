@@ -8,7 +8,11 @@ class Symbol(PlantUMLer):
 
     def __init__(self, tag) -> None:
         self.name = tag['name']
-        self.kind = tag['kind']
+        try:
+            self.kind = tag['kind']
+        except KeyError as e:
+            print(tag)
+            raise e
         self.filename = tag.get('path', "")
         self.line = 0
         self.body = ""
