@@ -55,3 +55,4 @@ class TagParser():
                 tag_manager << tag
             except NotFoundClassError as e:
                 print(e, tag)
+                raise e
