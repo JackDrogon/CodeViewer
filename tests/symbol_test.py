@@ -12,8 +12,11 @@ test Symbol class
 
 
 class SymbolTest(unittest.TestCase):
+    """
+    test: create symbol from tag
+    """
 
-    def test_symbol(self) -> None:
+    def test_create_symobol(self) -> None:
         tag = {
             "_type": "tag",
             "name": "leveldb::VersionEdit::deleted_files_",
@@ -27,6 +30,8 @@ class SymbolTest(unittest.TestCase):
             "scopeKind": "class"
         }
         symbol = Symbol(tag)
+
+        # check all fields of symbol are set correctly
         self.assertEqual(symbol.name, "leveldb::VersionEdit::deleted_files_")
         self.assertEqual(symbol.kind, "member")
         self.assertEqual(symbol.line, 0)
@@ -35,7 +40,6 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(
             str(symbol),
             'leveldb::VersionEdit::deleted_files_ db/version_edit.h:0')
-
         buffer = Buffer()
         symbol.to_plantuml(buffer)
         self.assertEqual(
