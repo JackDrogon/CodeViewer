@@ -38,7 +38,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(
             remove_template_class_typename(
                 'map<string, map<int, string>>::iterator'), "map::iterator")
-        # self.assertEqual(
-        #     remove_template_class_typename(
-        #         'map<string, map<int, string>>::iterator<std::string>'),
-        #     "map::iterator")
+        self.assertEqual(
+            remove_template_class_typename(
+                'map<string, map<int, string>>::iterator<std::string>'),
+            "map::iterator")
