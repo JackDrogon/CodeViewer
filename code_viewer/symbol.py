@@ -8,7 +8,7 @@ class Symbol(PlantUMLer):
 
     def __init__(self, tag) -> None:
         self.name = tag['name']
-        # FIXME
+        self.kind = tag['kind']
         self.filename = tag.get('path', "")
         self.line = 0
         self.body = ""

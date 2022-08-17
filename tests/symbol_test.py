@@ -28,6 +28,7 @@ class SymbolTest(unittest.TestCase):
         }
         symbol = Symbol(tag)
         self.assertEqual(symbol.name, "leveldb::VersionEdit::deleted_files_")
+        self.assertEqual(symbol.kind, "member")
         self.assertEqual(symbol.line, 0)
         self.assertEqual(symbol.filename, "db/version_edit.h")
         self.assertEqual(symbol.body, "")
