@@ -1,9 +1,7 @@
 # coding: utf-8
 
-import re
-
 from .klass import Class
-from .utils import remove_anon
+from .utils import remove_anon, remove_template_class_typename
 
 
 class NotFoundClassError(Exception):
@@ -73,8 +71,7 @@ class ClassManger():
         if self.__add_variable(class_name, tag):
             return
 
-        # FIXME: map<string, map<int, int>>
-        class_name = re.sub(r"<.*>", "", class_name)
+        class_name = remove_template_class_typename(class_name)
         if self.__add_variable(class_name, tag):
             return
 

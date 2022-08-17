@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from dataclasses import fields
+import re
 
 
 def remove_anon(name: str) -> str:
@@ -15,3 +15,16 @@ def remove_anon(name: str) -> str:
         else:
             name = name.replace(f"::{field}", "")
     return name
+
+
+def remove_template_class_typename(class_name: str) -> str:
+    """ Parse template class name, remove template class name template typename
+    Example:
+    >>> remove_template_class_typename("std::vector<int>")
+    'std::vector'
+    >>> remove_template_class_typename("std::vector<int, std::allocator<int>>")
+    'std::vector'
+    """
+    # FIXME: map<string, map<int, int>>
+    pattern = re.compile(r"<.*>")
+    return pattern.sub("", class_name)

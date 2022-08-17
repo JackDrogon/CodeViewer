@@ -1,8 +1,6 @@
 # coding: utf-8
 
-import re
-
-from .utils import remove_anon
+from .utils import remove_anon, remove_template_class_typename
 from .class_manager import ClassManger
 from .namespace import Namespace, NotFoundNamespaceError
 
@@ -102,7 +100,7 @@ class TagManger():
 
         if self.__is_class(scope_kind):
             class_name = remove_anon(tag.get('scope', ''))
-            class_name = re.sub(r"<.*>", "", class_name)
+            class_name = remove_template_class_typename(class_name)
             if class_name == '':
                 return self.namespaces[GLOBAL_NAMESPACE_NAME]
 
