@@ -25,6 +25,7 @@ def remove_anon(name: str) -> str:
 def remove_template_class_typename(class_name: str) -> str:
     """ Parse template class name, remove template class name template typename
     assume class_name is template class name, the class_name is right && valid, guaranteed by caller
+    remove '<>' bracket wrapper content
     Example:
     >>> remove_template_class_typename("std::vector<int>")
     'std::vector'

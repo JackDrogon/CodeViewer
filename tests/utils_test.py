@@ -24,21 +24,15 @@ class UtilsTest(unittest.TestCase):
             self.assertEqual(remove_anon(origin_name), name_without_anon)
 
     def test_remove_template_class_typename(self):
-        self.assertEqual(remove_template_class_typename('std::vector<int>'),
-                         'std::vector')
-        self.assertEqual(
-            remove_template_class_typename('std::vector<int>::iterator'),
-            'std::vector::iterator')
-        self.assertEqual(
-            remove_template_class_typename(
-                'std::vector<int, std::allocator<int>>'), 'std::vector')
-        self.assertEqual(
-            remove_template_class_typename('map<string, map<int, string>>'),
-            "map")
-        self.assertEqual(
-            remove_template_class_typename(
-                'map<string, map<int, string>>::iterator'), "map::iterator")
-        self.assertEqual(
-            remove_template_class_typename(
-                'map<string, map<int, string>>::iterator<std::string>'),
-            "map::iterator")
+        cases = [("std::vector<int>", "std::vector"),
+                 ("std::vector<int>::iterator", "std::vector::iterator"),
+                 ("std::vector<int, std::allocator<int>>", "std::vector"),
+                 ("std::vector<int, std::allocator<int>>::iterator",
+                  "std::vector::iterator"),
+                 ("map<string, map<int, string>>", "map"),
+                 ("map<string, map<int, string>>::iterator", "map::iterator"),
+                 ("map<string, map<int, string>>::iterator<std::string>",
+                  "map::iterator")]
+        for origin_name, name_without_template_typename in cases:
+            self.assertEqual(remove_template_class_typename(origin_name),
+                             name_without_template_typename)
