@@ -3,7 +3,8 @@
 """ code_viewer.utils unittest
 """
 
-import code_viewer
+from code_viewer.utils import remove_anon, remove_template_class_typename
+
 import unittest
 
 
@@ -20,5 +21,24 @@ class UtilsTest(unittest.TestCase):
         ]
 
         for origin_name, name_without_anon in cases:
-            self.assertEqual(code_viewer.remove_anon(origin_name),
-                             name_without_anon)
+            self.assertEqual(remove_anon(origin_name), name_without_anon)
+
+    def test_remove_template_class_typename(self):
+        self.assertEqual(remove_template_class_typename('std::vector<int>'),
+                         'std::vector')
+        self.assertEqual(
+            remove_template_class_typename('std::vector<int>::iterator'),
+            'std::vector::iterator')
+        self.assertEqual(
+            remove_template_class_typename(
+                'std::vector<int, std::allocator<int>>'), 'std::vector')
+        self.assertEqual(
+            remove_template_class_typename('map<string, map<int, string>>'),
+            "map")
+        self.assertEqual(
+            remove_template_class_typename(
+                'map<string, map<int, string>>::iterator'), "map::iterator")
+        # self.assertEqual(
+        #     remove_template_class_typename(
+        #         'map<string, map<int, string>>::iterator<std::string>'),
+        #     "map::iterator")

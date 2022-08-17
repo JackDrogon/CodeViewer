@@ -29,7 +29,9 @@ def remove_template_class_typename(class_name: str) -> str:
     'std::vector'
     >>> remove_template_class_typename("std::vector<int, std::allocator<int>>")
     'std::vector'
+    >>> remove_template_class_typename('map<string, map<int, string>>::iterator<std::string>')
+    'map::iterator'
     """
-    # FIXME: map<string, map<int, int>>
+    # FIXME: map<string, map<int, string>>::iterator<std::string>
     pattern = re.compile(r"<.*>")
     return pattern.sub("", class_name)
