@@ -1,2 +1,2 @@
 run:
-	PYTHONPATH=${PWD} ./bin/code-viewer.py test_data/leveldb.json
+	@PYTHONPATH=${PWD} ./bin/code-viewer.py test_data/leveldb.json
