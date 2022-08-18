@@ -14,7 +14,7 @@ def remove_anon(name: str) -> str:
     'leveldb::PosixEnv'
     """
     namespace_and_class = []
-    for index, field in enumerate(name.split('::')):
+    for field in name.split('::'):
         if field.startswith("__anon"):
             continue
         namespace_and_class.append(field)

@@ -4,11 +4,14 @@ from .symbol import Symbol
 
 
 class Variable(Symbol):
+    """ validation guaranteed by caller, no need to validate
+    """
 
     # {"_type": "tag", "name": "leveldb::VersionEdit::deleted_files_", "path": "db/version_edit.h", "pattern": "/^  DeletedFileSet deleted_files_;$/", "language": "C++", "typeref": "typename:DeletedFileSet", "kind": "member", "access": "private", "scope": "leveldb::VersionEdit", "scopeKind": "class"}
     def __init__(self, tag: dict) -> None:
         super().__init__(tag)
         scope = tag.get("scope", None)
+        self.scope = scope
         # if name startwiths scope, remove scope prefix
         if scope and self.name.startswith(scope):
             self.name = self.name[len(scope) + 2:]  # +2 is "::"

@@ -16,7 +16,7 @@ class SymbolTest(unittest.TestCase):
     test: create symbol from tag
     """
 
-    tag = {
+    TAG = {
         "_type": "tag",
         "name": "leveldb::VersionEdit::deleted_files_",
         "path": "db/version_edit.h",
@@ -30,7 +30,7 @@ class SymbolTest(unittest.TestCase):
     }
 
     def test_symobol_create(self) -> None:
-        symbol = Symbol(self.tag)
+        symbol = Symbol(self.TAG)
 
         # check all fields of symbol are set correctly
         self.assertEqual(symbol.name, "leveldb::VersionEdit::deleted_files_")
@@ -43,7 +43,7 @@ class SymbolTest(unittest.TestCase):
             'leveldb::VersionEdit::deleted_files_ db/version_edit.h:0')
 
     def test_symbol_str(self) -> None:
-        symbol = Symbol(self.tag)
+        symbol = Symbol(self.TAG)
 
         buffer = Buffer()
         symbol.to_plantuml(buffer)
