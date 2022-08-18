@@ -15,6 +15,7 @@ class ClassFunction(Symbol):
         # if name startwiths scope, remove scope prefix
         if scope and self.name.startswith(scope):
             self.name = self.name[len(scope) + 2:]  # +2 is "::"
+        self.scope = scope
 
         # typeref remove typename:
         self.typeref = tag.get("typeref", "")
@@ -41,6 +42,7 @@ class Class(Symbol):
     scope = "", class is in global namespace
     """
 
+    # {"_type":"tag","name":"BlockBuilder","path":"table/block_builder.h","pattern":"/^class BlockBuilder {$/","language":"C++","kind":"class","scope":"leveldb","scopeKind":"namespace"}
     def __init__(self, tag) -> None:
         super().__init__(tag)
         self.variables = []

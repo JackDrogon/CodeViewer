@@ -1,14 +1,13 @@
-#!/usr/bin/env python
 # coding: utf-8
+"""
+class Symbol unittest
+"""
 
 from code_viewer import Symbol
-from code_viewer import Buffer
 
 import unittest
-"""
-class Symbol test
-test Symbol class
-"""
+
+from test_helper import to_plantuml
 
 
 class SymbolTest(unittest.TestCase):
@@ -45,8 +44,6 @@ class SymbolTest(unittest.TestCase):
     def test_symbol_str(self) -> None:
         symbol = Symbol(self.TAG)
 
-        buffer = Buffer()
-        symbol.to_plantuml(buffer)
         self.assertEqual(
-            str(buffer),
+            to_plantuml(symbol),
             'leveldb::VersionEdit::deleted_files_ db/version_edit.h:0;')
