@@ -2,7 +2,7 @@
 """ code_viewer.utils unittest
 """
 
-from code_viewer.utils import remove_anon, remove_template_class_typename
+from code_viewer.utils import remove_anon, remove_template_class_typename, access_to_uml
 
 import unittest
 
@@ -35,3 +35,12 @@ class UtilsTest(unittest.TestCase):
         for origin_name, name_without_template_typename in cases:
             self.assertEqual(remove_template_class_typename(origin_name),
                              name_without_template_typename)
+
+    def test_access_to_uml(self):
+        good_cases = [('private', '-'), ('protected', '#'), ('public', '+')]
+        for access, uml_access in good_cases:
+            self.assertEqual(access_to_uml(access), uml_access)
+
+        bad_cases = ['', 'invalid']
+        for bad_case in bad_cases:
+            self.assertRaises(ValueError, access_to_uml, bad_case)

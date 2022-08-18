@@ -6,3 +6,6 @@ t: test
 
 test:
 	python3 -m unittest discover tests -p "*_test.py" -v
+
+count:
+	wc -l tests/*.py code_viewer/*.py bin/*.py

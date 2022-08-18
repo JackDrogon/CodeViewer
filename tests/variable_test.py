@@ -27,13 +27,13 @@ class VariableTest(unittest.TestCase):
         v = Variable(self.TAG)
         self.assertEqual(v.name, "deleted_files_")
         self.assertEqual(v.typeref, "DeletedFileSet")
-        self.assertEqual(v.access, "-")
+        self.assertEqual(v.access, "private")
         self.assertEqual(v.scope, "leveldb::VersionEdit")
         # self.assertEqual(v.scopeKind, "class")
 
     def test_variable_str(self):
         v = Variable(self.TAG)
-        self.assertEqual(str(v), "- DeletedFileSet deleted_files_")
+        self.assertEqual(str(v), "private DeletedFileSet deleted_files_")
 
     def test_variable_plantuml(self):
         v = Variable(self.TAG)

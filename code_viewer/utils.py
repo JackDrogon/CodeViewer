@@ -47,3 +47,22 @@ def remove_template_class_typename(class_name: str) -> str:
             buffer << c
 
     return str(buffer)
+
+
+def access_to_uml(access: str) -> str:
+    """ Convert access to uml access
+    >>> convert_access_to_uml("private")
+    '-'
+    >>> convert_access_to_uml("protected")
+    '#'
+    >>> convert_access_to_uml("public")
+    '+'
+    """
+    if access == "private":
+        return "-"
+    elif access == "protected":
+        return "#"
+    elif access == "public":
+        return "+"
+    else:
+        raise ValueError(f"Invalid access {access}")
