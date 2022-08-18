@@ -2,7 +2,7 @@
 """ code_vieewer ClassFunction && Class unittest
 """
 
-from code_viewer import Class, ClassFunction
+from code_viewer import Class, ClassFunction, klass
 from code_viewer import Buffer
 
 import unittest
@@ -34,7 +34,7 @@ class ClassFunctionTest(unittest.TestCase):
         self.assertEqual(func.scope,
                          "leveldb_filterpolicy_create_bloom::Wrapper")
         self.assertEqual(func.typeref, "void")
-        self.assertEqual(func.access, "+")
+        self.assertEqual(func.access, "public")
         self.assertEqual(func.signature,
                          "(const Slice * keys,int n,std::string * dst) const")
 
@@ -43,7 +43,7 @@ class ClassFunctionTest(unittest.TestCase):
 
         self.assertEqual(
             str(func),
-            "+ void CreateFilter(const Slice * keys,int n,std::string * dst) const"
+            "public void CreateFilter(const Slice * keys,int n,std::string * dst) const"
         )
 
     def test_class_function_plantuml(self):
@@ -71,14 +71,6 @@ class ClassTest(unittest.TestCase):
         "scopeKind": "namespace"
     }
 
-    # def setUp(self) -> None:
-    #     super().setUp()
-    #     self.klass = Class(tag)
-
-    # def tearDown(self) -> None:
-    #     super().tearDown()
-    #     self.klass = None
-
     def test_klass_create(self) -> None:
         klass = Class(self.TAG)
 
@@ -102,3 +94,84 @@ class ClassTest(unittest.TestCase):
 
         klass.to_plantuml(buffer)
         self.assertEqual(str(buffer), 'class leveldb::BlockBuilder {\n}')
+
+    def test_klass_add_function(self) -> None:
+        klass = Class(self.TAG)
+        function_tag = {
+            '_type': 'tag',
+            'name': 'restarts_',
+            'path': 'table/block_builder.h',
+            'pattern':
+            '/^  std::vector<uint32_t> restarts_;  \\/\\/ Restart points$/',
+            'language': 'C++',
+            'typeref': 'typename:std::vector<uint32_t>',
+            'kind': 'member',
+            'access': 'private',
+            'scope': 'leveldb::BlockBuilder',
+            'scopeKind': 'class'
+        }
+        # func = ClassFunction(function_tag)
+
+        klass.add_function(function_tag)
+        self.assertEqual(len(klass.functions), 1)
+        kclass_str = '''class: leveldb::BlockBuilder
+functions: [
+	private std::vector<uint32_t> restarts_
+]'''
+        self.assertEqual(str(klass), kclass_str)
+
+    def test_klass_add_variable(self) -> None:
+        klass = Class(self.TAG)
+        member_tag = {
+            '_type': 'tag',
+            'name': 'restarts_',
+            'path': 'table/block_builder.h',
+            'pattern':
+            '/^  std::vector<uint32_t> restarts_;  \\/\\/ Restart points$/',
+            'language': 'C++',
+            'typeref': 'typename:std::vector<uint32_t>',
+            'kind': 'member',
+            'access': 'private',
+            'scope': 'leveldb::BlockBuilder',
+            'scopeKind': 'class'
+        }
+
+        klass.add_variable(member_tag)
+        self.assertEqual(len(klass.variables), 1)
+        klass_str = '''class: leveldb::BlockBuilder
+members: [
+	private std::vector<uint32_t> restarts_
+]'''
+        self.assertEqual(str(klass), klass_str)
+
+    def test_klass_merge(self) -> None:
+        tag = {
+            "_type": "tag",
+            "name": "KeyConvertingIterator",
+            "path": "table/table_test.cc",
+            "pattern": "/^class KeyConvertingIterator : public Iterator {$/",
+            "file": True,
+            "language": "C++",
+            "kind": "class",
+            "scope": "leveldb",
+            "scopeKind": "namespace"
+        }
+        klass = Class(tag)
+        self.assertEqual(klass.name, "leveldb::KeyConvertingIterator")
+        self.assertEqual(len(klass.inherits), 0)
+
+        merge_tag = {
+            "_type": "tag",
+            "name": "KeyConvertingIterator",
+            "path": "table/table_test.cc",
+            "pattern": "/^class KeyConvertingIterator : public Iterator {$/",
+            "file": True,
+            "language": "C++",
+            "kind": "class",
+            "inherits": "Iterator",
+            "scope": "leveldb",
+            "scopeKind": "namespace"
+        }
+        klass.merge(merge_tag)
+        self.assertEqual(len(klass.inherits), 1)
+        self.assertIn("Iterator", klass.inherits)

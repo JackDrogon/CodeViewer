@@ -3,13 +3,13 @@
 from .buffer import Buffer
 from .symbol import Symbol
 from .variable import Variable
-from .utils import remove_anon
+from .utils import remove_anon, access_to_uml
 
 
 # maybe to all function
 class ClassFunction(Symbol):
     # {"_type": "tag", "name": "leveldb_filterpolicy_create_bloom::Wrapper::CreateFilter", "path": "db/c.cc", "pattern": "/^    void CreateFilter(const Slice* keys, int n, std::string* dst) const {$/", "file": true, "language": "C++", "typeref": "typename:void", "kind": "function", "access": "public", "signature": "(const Slice * keys,int n,std::string * dst) const", "scope": "leveldb_filterpolicy_create_bloom::Wrapper", "scopeKind": "struct"}
-    def __init__(self, tag) -> None:
+    def __init__(self, tag: dict) -> None:
         super().__init__(tag)
         scope = tag.get("scope", None)
         # if name startwiths scope, remove scope prefix
@@ -22,19 +22,17 @@ class ClassFunction(Symbol):
         if self.typeref.startswith("typename:"):
             self.typeref = self.typeref[len("typename:"):]
 
-        # access uml tag
-        access = tag.get("access", "")
-        if access == 'private':
-            self.access = '-'
-        elif access == 'protected':
-            self.access = '#'
-        else:
-            self.access = '+'
-
         self.signature = tag.get("signature", "")
+
+        # FIXME(Drogon): like Variable
+        self.access = tag.get("access", "public")
+        assert (self.access in ["private", "public", "protected"])
 
     def __str__(self) -> str:
         return f"{self.access} {self.typeref} {self.name}{self.signature}"
+
+    def to_plantuml(self, buffer: Buffer) -> None:
+        buffer << f"{access_to_uml(self.access)} {self.typeref} {self.name}{self.signature};"
 
 
 class Class(Symbol):
@@ -43,7 +41,7 @@ class Class(Symbol):
     """
 
     # {"_type":"tag","name":"BlockBuilder","path":"table/block_builder.h","pattern":"/^class BlockBuilder {$/","language":"C++","kind":"class","scope":"leveldb","scopeKind":"namespace"}
-    def __init__(self, tag) -> None:
+    def __init__(self, tag: dict) -> None:
         super().__init__(tag)
         self.variables = []
         self.functions = []
@@ -73,7 +71,7 @@ class Class(Symbol):
 
     # split __init__ in merge by multipass, because some classes inherit from other class && with other
     # generated tag
-    def merge(self, tag) -> None:
+    def merge(self, tag: dict) -> None:
         if self.is_anon is None:
             self.__maybe_fix_name()
 
