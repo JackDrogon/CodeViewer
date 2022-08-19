@@ -94,25 +94,30 @@ class Class(Symbol):
 
     def __str__(self) -> str:
         buffer = Buffer()
+
         buffer << f"class: {self.name}"
+
         if len(self.inherits) > 0:
             buffer << "\n"
             buffer << f"inherits: [\n"
             for inherit in self.inherits:
                 buffer << f"\t{inherit}\n"
             buffer << f"]"
+
         if len(self.variables) > 0:
             buffer << "\n"
             buffer << f"members: [\n"
             for variable in self.variables:
                 buffer << f"\t{variable}\n"
             buffer << f"]"
+
         if len(self.functions) > 0:
             buffer << "\n"
             buffer << f"functions: [\n"
             for function in self.functions:
                 buffer << f"\t{function}\n"
             buffer << f"]"
+
         return str(buffer)
 
     def add_function(self, tag: dict) -> None:
@@ -129,12 +134,13 @@ class Class(Symbol):
         for f in self.functions:
             f.to_plantuml(buffer)
             buffer << '\n'
-        if len(self.functions) != 0:
-            buffer << '\n'
 
         # append variables
-        for v in self.variables:
-            v.to_plantuml(buffer)
-            buffer << '\n'
+        if len(self.variables) > 0:
+            if len(self.functions) != 0:
+                buffer << '\n'
+            for v in self.variables:
+                v.to_plantuml(buffer)
+                buffer << '\n'
 
         buffer << '}'

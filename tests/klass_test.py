@@ -109,6 +109,10 @@ functions: [
 	private std::vector<uint32_t> restarts_
 ]'''
         self.assertEqual(str(klass), kclass_str)
+        kclass_uml = '''class leveldb::BlockBuilder {
+- std::vector<uint32_t> restarts_;
+}'''
+        self.assertEqual(to_plantuml(klass), kclass_uml)
 
     def test_klass_add_variable(self) -> None:
         klass = Class(self.TAG)
