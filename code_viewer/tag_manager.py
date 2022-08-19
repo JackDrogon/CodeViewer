@@ -4,7 +4,7 @@ from .utils import remove_anon, remove_template_class_typename
 from .class_manager import ClassManger
 from .namespace import Namespace, NotFoundNamespaceError
 
-GLOBAL_NAMESPACE_NAME = '.'
+GLOBAL_NAMESPACE_NAME = ''
 GLOBAL_NAMESPACE_TAG = {'name': GLOBAL_NAMESPACE_NAME, 'kind': 'namespace'}
 
 
