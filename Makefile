@@ -9,3 +9,6 @@ test:
 
 count:
 	wc -l tests/*.py code_viewer/*.py bin/*.py
+
+lint:
+	yapf -ir -p .

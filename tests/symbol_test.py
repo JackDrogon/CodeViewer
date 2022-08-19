@@ -37,13 +37,9 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(symbol.line, 0)
         self.assertEqual(symbol.filename, "db/version_edit.h")
         self.assertEqual(symbol.body, "")
-        self.assertEqual(
-            str(symbol),
-            'leveldb::VersionEdit::deleted_files_ db/version_edit.h:0')
+        self.assertEqual(str(symbol), 'leveldb::VersionEdit::deleted_files_ db/version_edit.h:0')
 
     def test_symbol_str(self) -> None:
         symbol = Symbol(self.TAG)
 
-        self.assertEqual(
-            to_plantuml(symbol),
-            'leveldb::VersionEdit::deleted_files_ db/version_edit.h:0;')
+        self.assertEqual(to_plantuml(symbol), 'leveldb::VersionEdit::deleted_files_ db/version_edit.h:0;')

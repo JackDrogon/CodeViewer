@@ -49,9 +49,7 @@ class TagManger():
         self.class_manager = ClassManger()
         self.function_manger = {}
         self.variable_manger = {}
-        self.namespaces = {
-            GLOBAL_NAMESPACE_NAME: Namespace(GLOBAL_NAMESPACE_TAG)
-        }
+        self.namespaces = {GLOBAL_NAMESPACE_NAME: Namespace(GLOBAL_NAMESPACE_TAG)}
         self.classname_to_namespace = {}
 
     def __lshift__(self, tag) -> None:

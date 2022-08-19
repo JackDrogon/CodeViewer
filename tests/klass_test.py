@@ -15,8 +15,7 @@ class ClassFunctionTest(unittest.TestCase):
         "_type": "tag",
         "name": "leveldb_filterpolicy_create_bloom::Wrapper::CreateFilter",
         "path": "db/c.cc",
-        "pattern":
-        "/^    void CreateFilter(const Slice* keys, int n, std::string* dst) const {$/",
+        "pattern": "/^    void CreateFilter(const Slice* keys, int n, std::string* dst) const {$/",
         "file": True,
         "language": "C++",
         "typeref": "typename:void",
@@ -31,28 +30,20 @@ class ClassFunctionTest(unittest.TestCase):
         func = ClassFunction(self.TAGS)
 
         self.assertEqual(func.name, "CreateFilter")
-        self.assertEqual(func.scope,
-                         "leveldb_filterpolicy_create_bloom::Wrapper")
+        self.assertEqual(func.scope, "leveldb_filterpolicy_create_bloom::Wrapper")
         self.assertEqual(func.typeref, "void")
         self.assertEqual(func.access, "public")
-        self.assertEqual(func.signature,
-                         "(const Slice * keys,int n,std::string * dst) const")
+        self.assertEqual(func.signature, "(const Slice * keys,int n,std::string * dst) const")
 
     def test_class_function_str(self):
         func = ClassFunction(self.TAGS)
 
-        self.assertEqual(
-            str(func),
-            "public void CreateFilter(const Slice * keys,int n,std::string * dst) const"
-        )
+        self.assertEqual(str(func), "public void CreateFilter(const Slice * keys,int n,std::string * dst) const")
 
     def test_class_function_plantuml(self):
         func = ClassFunction(self.TAGS)
 
-        self.assertEqual(
-            to_plantuml(func),
-            "+ void CreateFilter(const Slice * keys,int n,std::string * dst) const;"
-        )
+        self.assertEqual(to_plantuml(func), "+ void CreateFilter(const Slice * keys,int n,std::string * dst) const;")
 
 
 class ClassTest(unittest.TestCase):
@@ -101,8 +92,7 @@ class ClassTest(unittest.TestCase):
             '_type': 'tag',
             'name': 'restarts_',
             'path': 'table/block_builder.h',
-            'pattern':
-            '/^  std::vector<uint32_t> restarts_;  \\/\\/ Restart points$/',
+            'pattern': '/^  std::vector<uint32_t> restarts_;  \\/\\/ Restart points$/',
             'language': 'C++',
             'typeref': 'typename:std::vector<uint32_t>',
             'kind': 'member',
@@ -126,8 +116,7 @@ functions: [
             '_type': 'tag',
             'name': 'restarts_',
             'path': 'table/block_builder.h',
-            'pattern':
-            '/^  std::vector<uint32_t> restarts_;  \\/\\/ Restart points$/',
+            'pattern': '/^  std::vector<uint32_t> restarts_;  \\/\\/ Restart points$/',
             'language': 'C++',
             'typeref': 'typename:std::vector<uint32_t>',
             'kind': 'member',
