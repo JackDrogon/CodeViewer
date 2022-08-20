@@ -3,7 +3,6 @@
 """
 
 from code_viewer import Class, ClassFunction
-from code_viewer import Buffer
 
 import unittest
 
@@ -81,10 +80,7 @@ class ClassTest(unittest.TestCase):
 
     def test_empty_klass_plantuml(self) -> None:
         klass = Class(self.TAG)
-        buffer = Buffer()
-
-        klass.to_plantuml(buffer)
-        self.assertEqual(str(buffer), 'class leveldb::BlockBuilder {\n}')
+        self.assertEqual(to_plantuml(klass), 'class leveldb::BlockBuilder {\n}')
 
     def test_klass_add_function(self) -> None:
         klass = Class(self.TAG)
@@ -100,7 +96,6 @@ class ClassTest(unittest.TestCase):
             "scope": "leveldb::BlockBuilder",
             "scopeKind": "class"
         }
-        # {"_type": "tag", "name": "leveldb::BlockBuilder::BlockBuilder", "path": "table/block_builder.cc", "pattern": "/^BlockBuilder::BlockBuilder(const Options* options)$/", "language": "C++", "kind": "function", "signature": "(const Options * options)", "scope": "leveldb::BlockBuilder", "scopeKind": "class"}
         # func = ClassFunction(function_tag)
 
         klass.add_function(function_tag)
@@ -137,6 +132,10 @@ members: [
 	private std::vector<uint32_t> restarts_
 ]'''
         self.assertEqual(str(klass), klass_str)
+        klass_uml_str = '''class leveldb::BlockBuilder {
+	- std::vector<uint32_t> restarts_;
+}'''
+        self.assertEqual(to_plantuml(klass), klass_uml_str)
 
     def test_klass_nomember_merge(self) -> None:
         tag = {
@@ -169,3 +168,106 @@ members: [
         klass.merge(merge_tag)
         self.assertEqual(len(klass.inherits), 1)
         self.assertIn("Iterator", klass.inherits)
+        klass_str = """class: leveldb::KeyConvertingIterator
+inherits: [
+	Iterator
+]"""
+        self.assertEqual(str(klass), klass_str)
+        self.assertEqual(to_plantuml(klass), 'class leveldb::KeyConvertingIterator {\n}')
+
+    def test_klass_simple_all_methods(self):
+        # step1: create a KeyConvertingIterator class
+        tag = {
+            "_type": "tag",
+            "name": "KeyConvertingIterator",
+            "path": "table/table_test.cc",
+            "pattern": "/^class KeyConvertingIterator : public Iterator {$/",
+            "file": True,
+            "language": "C++",
+            "kind": "class",
+            "scope": "leveldb",
+            "scopeKind": "namespace"
+        }
+        klass = Class(tag)
+        self.assertEqual(klass.name, "leveldb::KeyConvertingIterator")
+        self.assertEqual(len(klass.inherits), 0)
+
+        # step2: merge the class with inheriters
+        merge_tag = {
+            "_type": "tag",
+            "name": "KeyConvertingIterator",
+            "path": "table/table_test.cc",
+            "pattern": "/^class KeyConvertingIterator : public Iterator {$/",
+            "file": True,
+            "language": "C++",
+            "kind": "class",
+            "inherits": "Iterator",
+            "scope": "leveldb",
+            "scopeKind": "namespace"
+        }
+        klass.merge(merge_tag)
+        self.assertEqual(len(klass.inherits), 1)
+        self.assertIn("Iterator", klass.inherits)
+
+        # step3: add member
+        member_tag = {
+            "_type": "tag",
+            "name": "leveldb::KeyConvertingIterator::iter_",
+            "path": "table/table_test.cc",
+            "pattern": "/^  Iterator* iter_;$/",
+            "file": True,
+            "language": "C++",
+            "typeref": "typename:Iterator *",
+            "kind": "member",
+            "access": "private",
+            "scope": "leveldb::KeyConvertingIterator",
+            "scopeKind": "class"
+        }
+        klass.add_variable(member_tag)
+        klass_str = """class: leveldb::KeyConvertingIterator
+inherits: [
+	Iterator
+]
+members: [
+	private Iterator * iter_
+]"""
+
+        self.assertEqual(str(klass), klass_str)
+        klass_plantuml_str = """class leveldb::KeyConvertingIterator {
+	- Iterator * iter_;
+}"""
+        self.assertEqual(to_plantuml(klass), klass_plantuml_str)
+
+        # step4: add function
+        function_tag = {
+            "_type": "tag",
+            "name": "status",
+            "path": "table/table_test.cc",
+            "pattern": "/^  Status status() const override {$/",
+            "file": True,
+            "language": "C++",
+            "typeref": "typename:Status",
+            "kind": "function",
+            "access": "public",
+            "signature": "() const",
+            "scope": "leveldb::KeyConvertingIterator",
+            "scopeKind": "class"
+        }
+        klass.add_function(function_tag)
+        klass_str = """class: leveldb::KeyConvertingIterator
+inherits: [
+	Iterator
+]
+members: [
+	private Iterator * iter_
+]
+functions: [
+	public Status status() const
+]"""
+        self.assertEqual(str(klass), klass_str)
+        klass_plantuml_str = """class leveldb::KeyConvertingIterator {
+	+ Status status() const;
+
+	- Iterator * iter_;
+}"""
+        self.assertEqual(to_plantuml(klass), klass_plantuml_str)
