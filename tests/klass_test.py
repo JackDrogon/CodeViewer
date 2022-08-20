@@ -2,7 +2,7 @@
 """ code_vieewer ClassFunction && Class unittest
 """
 
-from code_viewer import Class, ClassFunction, klass
+from code_viewer import Class, ClassFunction
 from code_viewer import Buffer
 
 import unittest
@@ -89,28 +89,29 @@ class ClassTest(unittest.TestCase):
     def test_klass_add_function(self) -> None:
         klass = Class(self.TAG)
         function_tag = {
-            '_type': 'tag',
-            'name': 'restarts_',
-            'path': 'table/block_builder.h',
-            'pattern': '/^  std::vector<uint32_t> restarts_;  \\/\\/ Restart points$/',
-            'language': 'C++',
-            'typeref': 'typename:std::vector<uint32_t>',
-            'kind': 'member',
-            'access': 'private',
-            'scope': 'leveldb::BlockBuilder',
-            'scopeKind': 'class'
+            "_type": "tag",
+            "name": "leveldb::BlockBuilder::Add",
+            "path": "table/block_builder.cc",
+            "pattern": "/^void BlockBuilder::Add(const Slice& key, const Slice& value) {$/",
+            "language": "C++",
+            "typeref": "typename:void",
+            "kind": "function",
+            "signature": "(const Slice & key,const Slice & value)",
+            "scope": "leveldb::BlockBuilder",
+            "scopeKind": "class"
         }
+        # {"_type": "tag", "name": "leveldb::BlockBuilder::BlockBuilder", "path": "table/block_builder.cc", "pattern": "/^BlockBuilder::BlockBuilder(const Options* options)$/", "language": "C++", "kind": "function", "signature": "(const Options * options)", "scope": "leveldb::BlockBuilder", "scopeKind": "class"}
         # func = ClassFunction(function_tag)
 
         klass.add_function(function_tag)
         self.assertEqual(len(klass.functions), 1)
         kclass_str = '''class: leveldb::BlockBuilder
 functions: [
-	private std::vector<uint32_t> restarts_
+	public void Add(const Slice & key,const Slice & value)
 ]'''
         self.assertEqual(str(klass), kclass_str)
         kclass_uml = '''class leveldb::BlockBuilder {
-- std::vector<uint32_t> restarts_;
+	+ void Add(const Slice & key,const Slice & value);
 }'''
         self.assertEqual(to_plantuml(klass), kclass_uml)
 
@@ -137,7 +138,7 @@ members: [
 ]'''
         self.assertEqual(str(klass), klass_str)
 
-    def test_klass_merge(self) -> None:
+    def test_klass_nomember_merge(self) -> None:
         tag = {
             "_type": "tag",
             "name": "KeyConvertingIterator",

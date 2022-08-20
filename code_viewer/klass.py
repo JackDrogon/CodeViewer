@@ -132,6 +132,7 @@ class Class(Symbol):
 
         # append functions
         for f in self.functions:
+            buffer << '\t'
             f.to_plantuml(buffer)
             buffer << '\n'
 
@@ -140,6 +141,7 @@ class Class(Symbol):
             if len(self.functions) != 0:
                 buffer << '\n'
             for v in self.variables:
+                buffer << '\t'
                 v.to_plantuml(buffer)
                 buffer << '\n'
 
