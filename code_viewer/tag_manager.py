@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from .utils import remove_anon, remove_template_class_typename
-from .class_manager import ClassManger
+from .class_manager import ClassManager
 from .namespace import Namespace, NotFoundNamespaceError
 
 GLOBAL_NAMESPACE_NAME = ''
@@ -46,7 +46,7 @@ class TagManger():
 
     def __init__(self) -> None:
         self.tags = {}
-        self.class_manager = ClassManger()
+        self.class_manager = ClassManager()
         self.function_manger = {}
         self.variable_manger = {}
         self.namespaces = {GLOBAL_NAMESPACE_NAME: Namespace(GLOBAL_NAMESPACE_TAG)}

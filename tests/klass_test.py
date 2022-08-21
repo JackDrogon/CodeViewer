@@ -265,9 +265,9 @@ functions: [
 	public Status status() const
 ]"""
         self.assertEqual(str(klass), klass_str)
-        klass_plantuml_str = """class leveldb::KeyConvertingIterator {
+        klass_uml_str = """class leveldb::KeyConvertingIterator {
 	+ Status status() const;
 
 	- Iterator * iter_;
 }"""
-        self.assertEqual(to_plantuml(klass), klass_plantuml_str)
+        self.assertEqual(to_plantuml(klass), klass_uml_str)

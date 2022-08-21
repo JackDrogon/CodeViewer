@@ -2,7 +2,7 @@
 
 from .symbol import Symbol
 from .utils import remove_anon
-from .class_manager import ClassManger
+from .class_manager import ClassManager
 
 
 class NotFoundNamespaceError(Exception):
@@ -19,13 +19,13 @@ class Namespace(Symbol):
     def __init__(self, tag: dict) -> None:
         super().__init__(tag)
         self.scope = tag.get('scope', "")
-        self.class_manager = ClassManger()
+        self.class_manager = ClassManager()
         self.function_manger = {}
         self.variable_manger = {}
 
-        self.__maybe_fix_name()
+        self._maybe_fix_name()
 
-    def __maybe_fix_name(self):
+    def _maybe_fix_name(self):
         # if name not start with scope name, add scope name to the front
         # like Table leveldb::DB => leveldb::DB::Table
         if not self.name.startswith(self.scope):

@@ -10,7 +10,7 @@ class NotFoundClassError(Exception):
         self.message = message
 
 
-class ClassManger():
+class ClassManager():
 
     def __init__(self) -> None:
         self.classes = {}
