@@ -11,11 +11,11 @@ GLOBAL_NAMESPACE_TAG = {'name': GLOBAL_NAMESPACE_NAME, 'kind': 'namespace'}
 class TagManger():
 
     @staticmethod
-    def __is_namespace(kind: str) -> bool:
+    def _is_namespace(kind: str) -> bool:
         return kind == 'namespace'
 
     @staticmethod
-    def __is_class(kind: str) -> bool:
+    def _is_class(kind: str) -> bool:
         if kind == 'class':
             return True
         if kind == 'struct':
@@ -25,19 +25,19 @@ class TagManger():
         return False
 
     @staticmethod
-    def __is_function(kind: str) -> bool:
+    def _is_function(kind: str) -> bool:
         if kind == 'function':
             return True
         return False
 
     @staticmethod
-    def __is_variable(kind: str) -> bool:
+    def _is_variable(kind: str) -> bool:
         if kind == 'variable':
             return True
         return False
 
     @staticmethod
-    def __is_member(kind: str) -> bool:
+    def _is_member(kind: str) -> bool:
         if kind == 'member':
             return True
         if kind == 'enumerator':
@@ -58,23 +58,23 @@ class TagManger():
         kind = tag.get('kind', '')
         if kind == '':
             return
-        if self.__is_namespace(kind):
+        if self._is_namespace(kind):
             self.add_namespace(tag)
 
-        namespace = self.__get_namespace(tag)
-        if self.__is_class(kind):
+        namespace = self._get_namespace(tag)
+        if self._is_class(kind):
             class_name = namespace.add_class(tag)
             self.classname_to_namespace[class_name] = namespace
             return
         # kind is function, add to function manager
-        if self.__is_function(kind):
+        if self._is_function(kind):
             namespace.add_function(tag)
             return
         # kind is variable, add to variable manager
-        if self.__is_variable(kind):
+        if self._is_variable(kind):
             namespace.add_variable(tag)
             return
-        if self.__is_member(kind):
+        if self._is_member(kind):
             namespace.add_member(tag)
             return
 
@@ -90,13 +90,13 @@ class TagManger():
         else:
             self.namespaces[namespace.name] = namespace
 
-    def __get_namespace(self, tag: dict) -> Namespace:
+    def _get_namespace(self, tag: dict) -> Namespace:
         scope_kind = tag.get('scopeKind', None)
         # scope_kind is None
         if scope_kind is None:
             return self.namespaces[GLOBAL_NAMESPACE_NAME]
 
-        if self.__is_class(scope_kind):
+        if self._is_class(scope_kind):
             class_name = remove_anon(tag.get('scope', ''))
             class_name = remove_template_class_typename(class_name)
             if class_name == '':
@@ -108,7 +108,7 @@ class TagManger():
                 raise NotFoundNamespaceError(class_name)
 
         # HACK: for kind: local....
-        if not self.__is_namespace(scope_kind):
+        if not self._is_namespace(scope_kind):
             return self.namespaces[GLOBAL_NAMESPACE_NAME]
 
         #  scope_kind is namespace

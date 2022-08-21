@@ -27,7 +27,7 @@ class ClassManger():
             self.classes[klass.name] = klass
         return klass.name
 
-    def __add_function(self, class_name: str, tag: dict) -> bool:
+    def _add_function(self, class_name: str, tag: dict) -> bool:
         if class_name in self.classes:
             self.classes[class_name].add_function(tag)
             return True
@@ -39,18 +39,18 @@ class ClassManger():
 
     def add_function(self, tag: dict) -> None:
         raw_class_name = tag['scope']
-        if self.__add_function(raw_class_name, tag):
+        if self._add_function(raw_class_name, tag):
             return
 
         # FIXME: need to check scope is anon class
         # check tag is in cpp impl file not header
         class_name = remove_anon(raw_class_name)
-        if self.__add_function(class_name, tag):
+        if self._add_function(class_name, tag):
             return
 
         raise NotFoundClassError(f"Not found class: {raw_class_name}")
 
-    def __add_variable(self, class_name: str, tag: dict) -> bool:
+    def _add_variable(self, class_name: str, tag: dict) -> bool:
         if class_name in self.classes:
             self.classes[class_name].add_variable(tag)
             return True
@@ -62,17 +62,17 @@ class ClassManger():
 
     def add_variable(self, tag: dict) -> None:
         raw_class_name = tag['scope']
-        if self.__add_variable(raw_class_name, tag):
+        if self._add_variable(raw_class_name, tag):
             return
 
         # FIXME: need to check scope is anon class
         # check tag is in cpp impl file not header
         class_name = remove_anon(raw_class_name)
-        if self.__add_variable(class_name, tag):
+        if self._add_variable(class_name, tag):
             return
 
         class_name = remove_template_class_typename(class_name)
-        if self.__add_variable(class_name, tag):
+        if self._add_variable(class_name, tag):
             return
 
         # raise NotFoundClassError(class_name)

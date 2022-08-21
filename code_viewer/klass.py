@@ -57,7 +57,7 @@ class Class(Symbol):
     split by ','
     """
 
-    def __add_inherits(self, tag: dict) -> None:
+    def _add_inherits(self, tag: dict) -> None:
         inherit = tag.get("inherits", None)
         if inherit is None:
             return
@@ -73,13 +73,13 @@ class Class(Symbol):
     # generated tag
     def merge(self, tag: dict) -> None:
         if self.is_anon is None:
-            self.__maybe_fix_name()
+            self._maybe_fix_name()
 
-        self.__add_inherits(tag)
+        self._add_inherits(tag)
 
     """fix the name of class"""
 
-    def __maybe_fix_name(self):
+    def _maybe_fix_name(self):
         # if name not start with scope name, add scope name to the front
         # like DataFile leveldb::SpecialEnv::NewWritableFile => leveldb::SpecialEnv::NewWritableFile::Data
         if not self.name.startswith(self.scope):
