@@ -52,6 +52,7 @@ class TagManger():
         self.namespaces = {GLOBAL_NAMESPACE_NAME: Namespace(GLOBAL_NAMESPACE_TAG)}
         self.classname_to_namespace = {}
 
+    # only one public function: << like add_tag
     def __lshift__(self, tag) -> None:
         self.tags[tag['name']] = tag
         # kind is class, add to class manager
@@ -59,7 +60,7 @@ class TagManger():
         if kind == '':
             return
         if self._is_namespace(kind):
-            self.add_namespace(tag)
+            self._add_namespace(tag)
 
         namespace = self._get_namespace(tag)
         if self._is_class(kind):
@@ -82,7 +83,7 @@ class TagManger():
     function: add namespace
     """
 
-    def add_namespace(self, tag: dict) -> None:
+    def _add_namespace(self, tag: dict) -> None:
         namespace = Namespace(tag)
         self.namespaces[namespace.name] = namespace
         if namespace.name in self.namespaces:

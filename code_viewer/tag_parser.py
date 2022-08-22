@@ -6,17 +6,6 @@ from .class_manager import NotFoundClassError
 from .tag_manager import TagManger
 from .namespace import NotFoundNamespaceError
 
-# {"_type"=>"tag",
-#  "name"=>"AcceptAndReply",
-#  "path"=>"raft/raft_paper_test.cc",
-#  "pattern"=>
-#   "/^  static std::unique_ptr<Message> AcceptAndReply(std::unique_ptr<Message> msg) {$/",
-#  "file"=>true,
-#  "typeref"=>"typename:std::unique_ptr<Message>",
-#  "kind"=>"function",
-#  "scope"=>"byteraft::ConsensusTest",
-#  "scopeKind"=>"class"}
-
 
 class TagParser():
 
