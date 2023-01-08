@@ -8,7 +8,7 @@ GLOBAL_NAMESPACE_NAME = ''
 GLOBAL_NAMESPACE_TAG = {'name': GLOBAL_NAMESPACE_NAME, 'kind': 'namespace'}
 
 
-class TagManger():
+class TagManager():
 
     @staticmethod
     def _is_namespace(kind: str) -> bool:

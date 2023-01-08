@@ -3,7 +3,7 @@
 import json
 
 from .class_manager import NotFoundClassError
-from .tag_manager import TagManger
+from .tag_manager import TagManager
 from .namespace import NotFoundNamespaceError
 
 
@@ -12,7 +12,7 @@ class TagParser():
     def __init__(self, tags_filename: str):
         self.tags_filename = tags_filename
 
-    def add_tags(self, tag_manager: TagManger) -> None:
+    def add_tags(self, tag_manager: TagManager) -> None:
         # first pass, construct all namespace, part class && ...
         second_pass_tags = []
         file = open(self.tags_filename, 'r')
