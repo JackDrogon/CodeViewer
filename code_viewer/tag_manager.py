@@ -85,7 +85,6 @@ class TagManger():
 
     def _add_namespace(self, tag: dict) -> None:
         namespace = Namespace(tag)
-        self.namespaces[namespace.name] = namespace
         if namespace.name in self.namespaces:
             self.namespaces[namespace.name].merge(tag)
         else:
