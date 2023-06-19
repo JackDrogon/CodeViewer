@@ -9,22 +9,16 @@ import code_viewer
 
 class ListClassAction:
 
-    def __init__(self, tag_manager: code_viewer.TagManager):
-        self.tag_manager = tag_manager
-
-    def __call__(self, args):
-        for namespace in self.tag_manager.namespaces.values():
+    def __call__(self, tag_manager: code_viewer.TagManager):
+        for namespace in tag_manager.namespaces.values():
             for klass in namespace.class_manager.classes.values():
                 print(klass.name)
 
 
 class ToUmlAction:
 
-    def __init__(self, tag_manager: code_viewer.TagManager):
-        self.tag_manager = tag_manager
-
-    def __call__(self, args):
-        for namespace in self.tag_manager.namespaces.values():
+    def __call__(self, tag_manager: code_viewer.TagManager):
+        for namespace in tag_manager.namespaces.values():
             for klass in namespace.class_manager.classes.values():
                 buffer = code_viewer.Buffer()
                 klass.to_plantuml(buffer)
@@ -34,11 +28,8 @@ class ToUmlAction:
 
 class ShowClassAction:
 
-    def __init__(self, tag_manager: code_viewer.TagManager):
-        self.tag_manager = tag_manager
-
-    def __call__(self, args):
-        for namespace in self.tag_manager.namespaces.values():
+    def __call__(self, tag_manager: code_viewer.TagManager):
+        for namespace in tag_manager.namespaces.values():
             logging.debug(f"namespace {namespace.name}")
             for klass in namespace.class_manager.classes.values():
                 print(klass.name, klass.scope)
@@ -73,13 +64,13 @@ def parse_args() -> ArgumentParser:
     subparsers = parser.add_subparsers()
 
     list_class_parser = subparsers.add_parser('list-class')
-    list_class_parser.set_defaults(func=ListClassAction(code_viewer.TagManager()))
+    list_class_parser.set_defaults(func=ListClassAction())
 
     to_uml_parser = subparsers.add_parser('to-uml')
-    to_uml_parser.set_defaults(func=ToUmlAction(code_viewer.TagManager()))
+    to_uml_parser.set_defaults(func=ToUmlAction())
 
     show_class_parser = subparsers.add_parser('show-class')
-    show_class_parser.set_defaults(func=ShowClassAction(code_viewer.TagManager()))
+    show_class_parser.set_defaults(func=ShowClassAction())
 
     parser.add_argument('filename')
     # Add log level flag, default "DEBUG"
@@ -99,7 +90,7 @@ def main() -> None:
     tag_parser.add_tags(tag_manager)
     logging.debug(f"tag_manager: {tag_manager}")
 
-    args.func(args)
+    args.func(tag_manager)
 
 
 if __name__ == "__main__":
