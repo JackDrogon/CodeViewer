@@ -3,11 +3,11 @@
 class Symbol unittest
 """
 
-from code_viewer import Symbol
-
 import unittest
 
 from test_helper import to_plantuml
+
+from code_viewer import Symbol
 
 
 class SymbolTest(unittest.TestCase):

@@ -2,9 +2,9 @@
 """
 buffer unittest
 """
-import code_viewer
-
 import unittest
+
+import code_viewer
 
 
 class BufferTest(unittest.TestCase):

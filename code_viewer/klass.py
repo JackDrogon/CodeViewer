@@ -2,8 +2,8 @@
 
 from .buffer import Buffer
 from .symbol import Symbol
+from .utils import access_to_uml, remove_anon
 from .variable import Variable
-from .utils import remove_anon, access_to_uml
 
 
 # maybe to all function

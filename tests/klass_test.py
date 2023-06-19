@@ -2,11 +2,11 @@
 """ code_vieewer ClassFunction && Class unittest
 """
 
-from code_viewer import Class, ClassFunction
-
 import unittest
 
 from test_helper import to_plantuml
+
+from code_viewer import Class, ClassFunction
 
 
 class ClassFunctionTest(unittest.TestCase):

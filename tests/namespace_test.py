@@ -2,11 +2,11 @@
 """ test namespace class
 """
 
-from code_viewer import Namespace
-
 import unittest
 
 from test_helper import to_plantuml
+
+from code_viewer import Namespace
 
 
 class NamespaceTest(unittest.TestCase):

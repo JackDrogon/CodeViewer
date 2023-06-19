@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from .utils import remove_anon, remove_template_class_typename
 from .class_manager import ClassManager
 from .namespace import Namespace, NotFoundNamespaceError
+from .utils import remove_anon, remove_template_class_typename
 
 GLOBAL_NAMESPACE_NAME = ''
 GLOBAL_NAMESPACE_TAG = {'name': GLOBAL_NAMESPACE_NAME, 'kind': 'namespace'}

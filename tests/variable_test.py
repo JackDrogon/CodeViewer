@@ -2,11 +2,11 @@
 """ code_viewer.variable unittest
 """
 
-from code_viewer.variable import Variable
-
 import unittest
 
 from test_helper import to_plantuml
+
+from code_viewer.variable import Variable
 
 
 class VariableTest(unittest.TestCase):

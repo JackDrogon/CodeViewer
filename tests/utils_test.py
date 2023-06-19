@@ -2,9 +2,10 @@
 """ code_viewer.utils unittest
 """
 
-from code_viewer.utils import remove_anon, remove_template_class_typename, access_to_uml
-
 import unittest
+
+from code_viewer.utils import (access_to_uml, remove_anon,
+                               remove_template_class_typename)
 
 
 class UtilsTest(unittest.TestCase):

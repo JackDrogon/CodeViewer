@@ -3,8 +3,8 @@
 import json
 
 from .class_manager import NotFoundClassError
-from .tag_manager import TagManager
 from .namespace import NotFoundNamespaceError
+from .tag_manager import TagManager
 
 
 class TagParser():

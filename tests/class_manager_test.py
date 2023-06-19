@@ -2,11 +2,11 @@
 """ code_viewer.ClassManager unittest
 """
 
-from code_viewer import ClassManager, NotFoundClassError
-
 import unittest
 
 from test_helper import to_plantuml
+
+from code_viewer import ClassManager, NotFoundClassError
 
 
 class ClassManagerTest(unittest.TestCase):

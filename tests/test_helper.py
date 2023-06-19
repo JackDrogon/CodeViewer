@@ -1,7 +1,6 @@
 # coding: utf-8
 
-from code_viewer import Buffer
-from code_viewer import PlantUMLer
+from code_viewer import Buffer, PlantUMLer
 
 
 def to_plantuml(s: PlantUMLer) -> str:

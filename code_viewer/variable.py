@@ -1,7 +1,7 @@
 # coding: utf-8
 
-from .symbol import Symbol
 from .buffer import Buffer
+from .symbol import Symbol
 from .utils import access_to_uml
 
 

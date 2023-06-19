@@ -1,8 +1,8 @@
 # coding: utf-8
 
+from .class_manager import ClassManager
 from .symbol import Symbol
 from .utils import remove_anon
-from .class_manager import ClassManager
 
 
 class NotFoundNamespaceError(Exception):
