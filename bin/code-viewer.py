@@ -9,7 +9,7 @@ import code_viewer
 
 class ListClassAction:
 
-    def __init__(self, tag_manager):
+    def __init__(self, tag_manager: code_viewer.TagManager):
         self.tag_manager = tag_manager
 
     def __call__(self, args):
@@ -20,7 +20,7 @@ class ListClassAction:
 
 class ToUmlAction:
 
-    def __init__(self, tag_manager):
+    def __init__(self, tag_manager: code_viewer.TagManager):
         self.tag_manager = tag_manager
 
     def __call__(self, args):
@@ -34,7 +34,7 @@ class ToUmlAction:
 
 class ShowClassAction:
 
-    def __init__(self, tag_manager):
+    def __init__(self, tag_manager: code_viewer.TagManager):
         self.tag_manager = tag_manager
 
     def __call__(self, args):
@@ -46,7 +46,7 @@ class ShowClassAction:
                 print("----------")
 
 
-def setup_logger(filename=None, type="console"):
+def setup_logger(filename: str = None, type: str = "console") -> None:
     """
     type is console/console-color/file(all other)
     """
@@ -66,7 +66,7 @@ def setup_logger(filename=None, type="console"):
     logging.basicConfig(format=format, filename=filename, level=logging.INFO)
 
 
-def parse_args():
+def parse_args() -> ArgumentParser:
     parser = ArgumentParser()
     subparsers = parser.add_subparsers()
 
@@ -83,7 +83,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     setup_logger(type="console-color")
     # setup_logger(type=None) # file logger
 
