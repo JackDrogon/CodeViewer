@@ -39,31 +39,33 @@ class ShowClassAction:
 
     def __call__(self, args):
         for namespace in self.tag_manager.namespaces.values():
-            print(f"namespace {namespace.name}")
+            logging.debug(f"namespace {namespace.name}")
             for klass in namespace.class_manager.classes.values():
                 print(klass.name, klass.scope)
                 print(klass)
                 print("----------")
 
 
-def setup_logger(filename: str = None, type: str = "console") -> None:
+def setup_logger(filename: str = None, type: str = "console", level_name: str = "INFO") -> None:
     """
     type is console/console-color/file(all other)
     """
     format = "[%(asctime)s] [%(filename)s:%(lineno)d] [%(levelname)s] - %(message)s"
+    level = getattr(logging, level_name.upper(), None)
+    # level name to level
     if type == "console":
-        logging.basicConfig(format=format, level=logging.INFO)
+        logging.basicConfig(format=format, level=level_name)
         return
     elif type == "console-color":
         import coloredlogs
-        coloredlogs.install(fmt=format, level="INFO")
+        coloredlogs.install(fmt=format, level=level)
         return
 
     if filename is None:
         import pathlib
         filename = f"{pathlib.Path(__file__).stem}.log"
 
-    logging.basicConfig(format=format, filename=filename, level=logging.INFO)
+    logging.basicConfig(format=format, filename=filename, level=level)
 
 
 def parse_args() -> ArgumentParser:
@@ -80,19 +82,22 @@ def parse_args() -> ArgumentParser:
     show_class_parser.set_defaults(func=ShowClassAction(code_viewer.TagManager()))
 
     parser.add_argument('filename')
+    # Add log level flag, default "DEBUG"
+    parser.add_argument('--log-level', default='DEBUG', help='Set the logging level')
     return parser.parse_args()
 
 
 def main() -> None:
-    setup_logger(type="console-color")
-    # setup_logger(type=None) # file logger
-
     args = parse_args()
+
+    # setup_logger(type=None) # file logger
+    setup_logger(type="console-color", level_name=args.log_level)
 
     logging.debug(f"run with {args}")
     tag_parser = code_viewer.TagParser(args.filename)
     tag_manager = code_viewer.TagManager()
     tag_parser.add_tags(tag_manager)
+    logging.debug(f"tag_manager: {tag_manager}")
 
     args.func(args)
 
