@@ -7,6 +7,45 @@ from argparse import ArgumentParser
 import code_viewer
 
 
+class ListClassAction:
+
+    def __init__(self, tag_manager):
+        self.tag_manager = tag_manager
+
+    def __call__(self, args):
+        for namespace in self.tag_manager.namespaces.values():
+            for klass in namespace.class_manager.classes.values():
+                print(klass.name)
+
+
+class ToUmlAction:
+
+    def __init__(self, tag_manager):
+        self.tag_manager = tag_manager
+
+    def __call__(self, args):
+        for namespace in self.tag_manager.namespaces.values():
+            for klass in namespace.class_manager.classes.values():
+                buffer = code_viewer.Buffer()
+                klass.to_plantuml(buffer)
+                print(buffer)
+                print("----------")
+
+
+class ShowClassAction:
+
+    def __init__(self, tag_manager):
+        self.tag_manager = tag_manager
+
+    def __call__(self, args):
+        for namespace in self.tag_manager.namespaces.values():
+            print(f"namespace {namespace.name}")
+            for klass in namespace.class_manager.classes.values():
+                print(klass.name, klass.scope)
+                print(klass)
+                print("----------")
+
+
 def setup_logger(filename=None, type="console"):
     """
     type is console/console-color/file(all other)
@@ -17,7 +56,7 @@ def setup_logger(filename=None, type="console"):
         return
     elif type == "console-color":
         import coloredlogs
-        coloredlogs.install(format=format, level="INFO")
+        coloredlogs.install(fmt=format, level="INFO")
         return
 
     if filename is None:
@@ -29,16 +68,19 @@ def setup_logger(filename=None, type="console"):
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument('--to-uml', dest="to_uml", action='store_true')
+    subparsers = parser.add_subparsers()
+
+    list_class_parser = subparsers.add_parser('list-class')
+    list_class_parser.set_defaults(func=ListClassAction(code_viewer.TagManager()))
+
+    to_uml_parser = subparsers.add_parser('to-uml')
+    to_uml_parser.set_defaults(func=ToUmlAction(code_viewer.TagManager()))
+
+    show_class_parser = subparsers.add_parser('show-class')
+    show_class_parser.set_defaults(func=ShowClassAction(code_viewer.TagManager()))
+
     parser.add_argument('filename')
-    parser.add_argument('--list-class', dest="list_class", action='store_true')
     return parser.parse_args()
-
-
-def list_class(tag_manager: code_viewer.TagManager):
-    for namespace in tag_manager.namespaces.values():
-        for klass in namespace.class_manager.classes.values():
-            print(klass.name)
 
 
 def main():
@@ -52,22 +94,7 @@ def main():
     tag_manager = code_viewer.TagManager()
     tag_parser.add_tags(tag_manager)
 
-    if args.list_class:
-        list_class(tag_manager)
-        return
-
-    for namespace in tag_manager.namespaces.values():
-        print(f"namespace {namespace.name}")
-        for klass in namespace.class_manager.classes.values():
-            if args.to_uml:
-                buffer = code_viewer.Buffer()
-                klass.to_plantuml(buffer)
-                print(buffer)
-                print("----------")
-            else:
-                print(klass.name, klass.scope)
-                print(klass)
-                print("----------")
+    args.func(args)
 
 
 if __name__ == "__main__":
