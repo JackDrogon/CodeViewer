@@ -63,11 +63,15 @@ class Class(Symbol):
             return
 
         inherits = inherit.split(",")
+        # print(f"add inherit: {inherits}")
         self.inherits.update(inherits)
         # for inherit in inherits:
         #     # remove cpp template <type>
         #     # self.inherit[i] = remove_anon(self.inherit[i])
         #     self.inherits.append(inherit)
+
+    def is_derived_class(self) -> bool:
+        return len(self.inherits) > 0
 
     # split __init__ in merge by multipass, because some classes inherit from other class && with other
     # generated tag
